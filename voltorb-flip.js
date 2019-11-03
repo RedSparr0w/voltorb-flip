@@ -10,6 +10,7 @@ class Game {
     this._x = x;
     this._y = y;
     this.points = 1;
+    this.total_points = 0;
     this.state = State.LOADING;
     this.Board = new Board(x, y);
     this.level = 0;
@@ -26,6 +27,7 @@ class Game {
   set level(level){
     this._level = level;
     this.Board.resetBoard(level);
+    document.getElementById('next_level').style.display = 'none';
     this.state = State.READY;
   }
 
@@ -35,7 +37,20 @@ class Game {
 
   set points(points){
     this._points = +points;
-    document.getElementById('points').innerText = points;
+    try{
+      document.getElementById('points').innerText = points;
+    }catch(O_o){}
+  }
+
+  get total_points(){
+    return this._total_points || 0;
+  }
+
+  set total_points(points){
+    this._total_points = +points;
+    try{
+      document.getElementById('total_points').innerText = this._total_points;
+    }catch(O_o){}
   }
 
   checkTile(x, y){
@@ -67,11 +82,14 @@ class Game {
 
   newGame(){
     this.points = 1;
+    this.total_points = 0;
     this.level = 0;
   }
 
   nextLevel(){
     this.level++;
+    this.total_points += this.points;
+    this.points = 1;
   }
 
   isCompleted(){
@@ -79,6 +97,7 @@ class Game {
   }
 
   completeLevel(){
+    document.getElementById('next_level').style.display = '';
     alert('level completed!');
   }
 }
@@ -156,9 +175,7 @@ class Board {
       for (let y = 0; y <= this._y; y++){
         const col = document.createElement('td');
         if (y == this._y && x == this._x) {
-
-        }
-        else if (y < this._y && x < this._x) {
+        } else if (y < this._y && x < this._x) {
           col.classList.add('card');
           const value = this.board[x][y].value;
           col.innerHTML = `
@@ -199,3 +216,12 @@ class Tile {
 }
 
 game = new Game();
+
+function shiftHandler(event) {
+    shift = event.shiftKey || event.ctrlKey;
+    document.body.className = shift ? 'shift-pressed' : '';
+};
+
+window.addEventListener("keydown", shiftHandler, false);
+window.addEventListener("keypress", shiftHandler, false);
+window.addEventListener("keyup", shiftHandler, false);

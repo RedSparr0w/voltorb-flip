@@ -9,9 +9,10 @@
     <h1>Voltorb Flip</h1>
     <table id="gameBoard">
     </table>
-    <h2>Points: <strong id="points"></strong></h2>
-    <button onclick="game.newGame();">Restart</button>
-    <button onclick="game.nextLevel();">Next Level</button>
+    <h2>Points: <strong id="points">1</strong></h2>
+    <h2>Total Points: <strong id="total_points">0</strong></h2>
+    <button id="restart_game" onclick="game.newGame();">Restart</button>
+    <button id="next_level" onclick="game.nextLevel();">Next Level</button>
   </body>
   <script src="voltorb-flip.js"></script>
 </html>
