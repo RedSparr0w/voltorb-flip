@@ -1,73 +1,191 @@
 const State = {
-  NONE: 0,
-  NEW_GAME: 1,
-  PLAYING: 2,
-  END_GAME: 3,
+  LOADING: 0,
+  READY: 1,
+  IDLE: 2,
+  GAMEOVER: 3,
 }
 
-const Game = {}
-
-const resetBoard = () => {
-  Game.board = Array(5).fill(null).map(() => Array(5).fill(null).map(() => Math.floor(Math.random() * 4)));
-  Game.totals = {rows:{}, cols: {}};
-  Game.board.forEach((row, row_index)=>{
-    row.forEach((col, col_index)=>{
-      if (!Game.totals.rows[row_index]) Game.totals.rows[row_index] = {count: 0, voltorbs: 0};
-      if (!Game.totals.cols[col_index]) Game.totals.cols[col_index] = {count: 0, voltorbs: 0};
-      if (col > 0) Game.totals.rows[row_index].count += col;
-      else Game.totals.rows[row_index].voltorbs++;
-      if (col > 0) Game.totals.cols[col_index].count += col;
-      else Game.totals.cols[col_index].voltorbs++;
-    });
-  });
-  console.table(Game.board);
-}
-
-const newGame = () => {
-  resetBoard();
-  Game.state = State.NEW_GAME;
-  [...document.getElementsByClassName('card')].forEach((el, index)=>{
-    row_index = Math.floor(index / 5);
-    col_index = index % 5;
-    value = Game.board[row_index][col_index];
-    el.innerHTML = `
-      <div class="flip-card" onclick="reveal(this, ${row_index}, ${col_index})"">
-        <div class="flip-card-inner">
-          <div class="flip-card-front">
-          </div>
-          <div class="flip-card-back">
-            <span${value ? `>${value}` : ' class="voltorb">'}</span>
-          </div>
-        </div>
-      </div>`;
-  });
-  [...document.getElementsByClassName('info')].forEach((el, index)=>{
-    let value = 0;
-    if (index < 5)
-      value = Game.totals.rows[index];
-    else
-      value = Game.totals.cols[index -5];
-    el.innerHTML = `<span class="total_value">${value.count}</span>
-                    <span class="total_voltorb">${value.voltorbs}</span>`;
-  });
-}
-
-const reveal = (e, x, y) => {
-  if (Game.state == State.END_GAME) return;
-  e.classList.add('revealed');
-  // If you flipped a voltorb
-  if (Game.board[x][y] == 0) {
-    Game.state = State.END_GAME
-    // restart game in 5 seconds
-    setTimeout(()=>{
-      newGame();
-    }, 5000);
+class Game {
+  constructor(x = 5, y = 5){
+    this._x = x;
+    this._y = y;
+    this.points = 1;
+    this.state = State.LOADING;
+    this.Board = new Board(x, y);
+    this.level = 0;
   }
-  if (checkGameComplete()) alert('You win!');
+
+  get board(){
+    return this.Board.board;
+  }
+
+  get level(){
+    return this._level;
+  }
+
+  set level(level){
+    this._level = level;
+    this.Board.resetBoard(level);
+    this.state = State.READY;
+  }
+
+  checkTile(x, y){
+    // Check if game is ready
+    if (this.state != State.READY) return;
+
+    // Check the tile
+    const tile = this.Board.getTile(x, y);
+    const { checked, value } = tile;
+
+    // Have we have already checked this tile
+    if (checked) return;
+
+    // Mark the tile as checked
+    tile.check();
+    document.getElementById(`tile-${x}-${y}`).classList.add('checked');
+
+    // Add the points
+    this.points *= value;
+
+    // End the game if it was a voltorb (0 points)
+    if (value <= 0) this.end();
+    if (this.isCompleted()) this.completeLevel();
+  }
+
+  end(){
+    this.state = State.END_GAME;
+  }
+
+  start(){
+    this.level = 0;
+  }
+
+  nextLevel(){
+    this.level++;
+  }
+
+  isCompleted(){
+    return this.Board.isCompleted();
+  }
+
+  completeLevel(){
+    alert('level completed!');
+  }
 }
 
-const checkGameComplete = () => {
-  return !Game.board.some(row=>row.some(val=>val > 1))
+class Board {
+  constructor(x = 5, y = 5){
+    this._x = x;
+    this._y = y;
+    this.resetBoard();
+  }
+
+  get size() {
+    return {
+      x: this._x,
+      y: this._y,
+    };
+  }
+
+  get board(){
+    const board = Array(this._x).fill(null).map((_x, x) => Array(this._y).fill(null).map((_y, y) => this.getTile(x, y)));
+    return board;
+  }
+
+  coordToIndex(x, y){
+    return (x * this._y) + (y % this._y);
+  }
+
+  getTile(x, y){
+    return this._board[this.coordToIndex(x, y)];
+  }
+
+  isCompleted(){
+    return !this._board.filter(tile=>!tile.checked).some(tile=>tile.value>1);
+  }
+
+  getInfoX(x){
+    const values = {
+        points: 0,
+        voltorbs: 0,
+      };
+
+    const index = x * this._y;
+
+    for (let i = 0; i < this._y; i++){
+      const value = this._board[index + i].value;
+      if (value <= 0) values.voltorbs++;
+      else values.points += value;
+    }
+
+    return values;
+  }
+
+  getInfoY(y){
+    const values = {
+        points: 0,
+        voltorbs: 0,
+      };
+
+    for (let x = 0; x < this._y; x++){
+      const value = this._board[(x * this._y) + y].value;
+      if (value <= 0) values.voltorbs++;
+      else values.points += value;
+    }
+
+    return values;
+  }
+
+  resetBoard(level = 0){
+    // assign each cell a number from 0 → 3
+    this._board = new Array(this._x * this._y).fill(null).map(()=>new Tile());
+    const table = document.getElementById('gameBoard');
+    table.innerHTML = '';
+    for(let x = 0; x <= this._x; x++){
+      const row = document.createElement('tr');
+      for (let y = 0; y <= this._y; y++){
+        const col = document.createElement('td');
+        if (y == this._y && x == this._x) {
+
+        }
+        else if (y < this._y && x < this._x) {
+          col.classList.add('card');
+          const value = this.board[x][y].value;
+          col.innerHTML = `
+            <div id="tile-${x}-${y}" class="flip-card" onclick="game.checkTile(${x}, ${y})">
+              <div class="flip-card-inner">
+                <div class="flip-card-front">
+                </div>
+                <div class="flip-card-back">
+                  <span${value ? `>${value}` : ' class="voltorb">'}</span>
+                </div>
+              </div>
+            </div>`;
+        } else {
+          col.classList.add('info');
+          let values;
+          if (x >= this._x) values = this.getInfoY(y);
+          if (y >= this._y) values = this.getInfoX(x);
+          col.innerHTML = `<span class="total_value">${values.points}</span>
+                    <span class="total_voltorb">${values.voltorbs}</span>`;
+        }
+        row.appendChild(col);
+      }
+      table.appendChild(row);
+    }
+    return this._board;
+  }
 }
 
-newGame();
+class Tile {
+  constructor(){
+    this.value = Math.floor(Math.random() * 3);
+    this.checked = false;
+  }
+
+  check(){
+    this.checked = true;
+  }
+}
+
+game = new Game();

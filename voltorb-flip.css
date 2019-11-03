@@ -59,7 +59,7 @@ body {
 }
 
 /* Flip horizontially */
-.flip-card.revealed .flip-card-inner {
+.flip-card.checked .flip-card-inner {
   transform: rotateY(180deg);
 }
 
