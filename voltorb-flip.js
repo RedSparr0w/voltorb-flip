@@ -182,12 +182,22 @@ class Board {
             <div id="tile-${x}-${y}" class="flip-card" onclick="game.checkTile(${x}, ${y})">
               <div class="flip-card-inner">
                 <div class="flip-card-front">
+                  <span class="voltorb"></span>
+                  <span class="one">1</span>
+                  <span class="two">2</span>
+                  <span class="three">3</span>
                 </div>
                 <div class="flip-card-back">
                   <span${value ? `>${value}` : ' class="voltorb">'}</span>
                 </div>
               </div>
             </div>`;
+          col.addEventListener("mouseover", ()=>{
+            hovered_element = col;
+          });
+          col.addEventListener("mouseout", ()=>{
+            hovered_element = undefined;
+          });
         } else {
           col.classList.add('info');
           let values;
@@ -215,13 +225,28 @@ class Tile {
   }
 }
 
-game = new Game();
+let hovered_element;
+const game = new Game();
 
-function shiftHandler(event) {
-    shift = event.shiftKey || event.ctrlKey;
-    document.body.className = shift ? 'shift-pressed' : '';
-};
+function keyaction(e){
+    myElement.innerHTML+= String.fromCharCode(e.charCode);
+}
 
-window.addEventListener("keydown", shiftHandler, false);
-window.addEventListener("keypress", shiftHandler, false);
-window.addEventListener("keyup", shiftHandler, false);
+document.addEventListener("keypress", function(event){
+  if (hovered_element == undefined) return;
+  switch (event.keyCode){
+    case 48: // 0
+    case 96: // `
+      hovered_element.classList.toggle('show-0');
+      break;
+    case 49: // 1
+      hovered_element.classList.toggle('show-1');
+      break;
+    case 50: // 2
+      hovered_element.classList.toggle('show-2');
+      break;
+    case 51: // 3
+      hovered_element.classList.toggle('show-3');
+      break;
+  }
+});
