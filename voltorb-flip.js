@@ -31,9 +31,15 @@ const newGame = () => {
     col_index = index % 5;
     value = Game.board[row_index][col_index];
     el.innerHTML = `
-<div class="cover" onclick="reveal(this, ${row_index}, ${col_index})"></div>
-${value ? value : '<span class="voltorb"></span>'}
-`;
+      <div class="flip-card" onclick="reveal(this, ${row_index}, ${col_index})"">
+        <div class="flip-card-inner">
+          <div class="flip-card-front">
+          </div>
+          <div class="flip-card-back">
+            <span${value ? `>${value}` : ' class="voltorb">'}</span>
+          </div>
+        </div>
+      </div>`;
   });
   [...document.getElementsByClassName('info')].forEach((el, index)=>{
     let value = 0;
@@ -48,7 +54,7 @@ ${value ? value : '<span class="voltorb"></span>'}
 
 const reveal = (e, x, y) => {
   if (Game.state == State.END_GAME) return;
-  e.remove();
+  e.classList.add('revealed');
   // If you flipped a voltorb
   if (Game.board[x][y] == 0) {
     Game.state = State.END_GAME
