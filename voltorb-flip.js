@@ -98,7 +98,6 @@ class Game {
 
   completeLevel(){
     document.getElementById('next_level').style.display = '';
-    alert('level completed!');
   }
 }
 
