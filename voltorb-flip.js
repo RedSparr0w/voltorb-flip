@@ -29,6 +29,15 @@ class Game {
     this.state = State.READY;
   }
 
+  get points(){
+    return this._points || 0;
+  }
+
+  set points(points){
+    this._points = +points;
+    document.getElementById('points').innerText = points;
+  }
+
   checkTile(x, y){
     // Check if game is ready
     if (this.state != State.READY) return;
@@ -56,7 +65,8 @@ class Game {
     this.state = State.END_GAME;
   }
 
-  start(){
+  newGame(){
+    this.points = 1;
     this.level = 0;
   }
 
