@@ -251,3 +251,12 @@ document.addEventListener("keypress", function(event){
       break;
   }
 });
+
+function shiftHandler(event) {
+    const shift = game.state !== State.READY && (event.shiftKey || event.ctrlKey);
+    document.body.className = shift ? 'shift-pressed' : '';
+};
+
+window.addEventListener("keydown", shiftHandler, false);
+window.addEventListener("keypress", shiftHandler, false);
+window.addEventListener("keyup", shiftHandler, false);
