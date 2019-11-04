@@ -229,10 +229,7 @@ class Tile {
 let hovered_element;
 const game = new Game();
 
-function keyaction(e){
-    myElement.innerHTML+= String.fromCharCode(e.charCode);
-}
-
+// Apply the markers
 document.addEventListener("keypress", function(event){
   if (hovered_element == undefined) return;
   switch (event.keyCode){
@@ -252,6 +249,7 @@ document.addEventListener("keypress", function(event){
   }
 });
 
+// Show the values on hover once the game is over
 function shiftHandler(event) {
     const shift = game.state !== State.READY && (event.shiftKey || event.ctrlKey);
     document.body.className = shift ? 'shift-pressed' : '';
