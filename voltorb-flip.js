@@ -255,6 +255,19 @@ function shiftHandler(event) {
     document.body.className = shift ? 'shift-pressed' : '';
 };
 
-window.addEventListener("keydown", shiftHandler, false);
-window.addEventListener("keypress", shiftHandler, false);
-window.addEventListener("keyup", shiftHandler, false);
+window.addEventListener('keydown', shiftHandler, false);
+window.addEventListener('keypress', shiftHandler, false);
+window.addEventListener('keyup', shiftHandler, false);
+
+// Show modals
+const showModal = (element_id) => {
+  const modal = document.getElementById(element_id);
+  if (modal) modal.style.display = 'block';
+}
+
+// Close the modal if the background is clicked while modal open
+window.addEventListener('click', (event) => {
+  if (event.target.classList.contains('modal')) {
+    event.target.style.display = 'none';
+  }
+});

@@ -128,3 +128,26 @@ background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/s
 .show-3 .flip-card-front span.three  {
   display: block;
 }
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 10;
+  top: 0px;
+  left: 0px;
+  width: 100vw;
+  height: 100vh;
+  overflow: auto;
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.modal-content {
+  margin-top: 100px;
+  min-width: 30vw;
+  width: 400px;
+  margin: 15% auto; /* 15% from the top and centered */
+  background: whitesmoke;
+  color: #333;
+  padding: 20px;
+  border-radius: 3px;
+}

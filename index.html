@@ -11,15 +11,21 @@
     </table>
     <h2>Points: <strong id="points">1</strong></h2>
     <h2>Total Points: <strong id="total_points">0</strong></h2>
-    <button id="restart_game" onclick="game.newGame();">Restart</button>
-    <button id="next_level" onclick="game.nextLevel();">Next Level</button>
-    <br/>
-    <span>
-      <h4>Controls:</h4>
-      <span>Click to flip the tile.<br/>
-      Hover + <kbd>`, 0, 1, 2, 3</kbd> keys to mark the tile.<br/>
-      Hover + <kbd>Shift/Ctrl</kbd> - View tile values once game finished.</span>
-    </span>
+    <p>
+      <button id="restart_game" onclick="game.newGame();">Restart</button>
+      <button id="next_level" onclick="game.nextLevel();">Next Level</button>
+    </p>
+    <p>
+      <button onclick="showModal('controls');">Controls</button>
+    </p>
+    <div id="controls" class="modal">
+      <div class="modal-content">
+        <h2>Controls:</h2>
+        <p>Click to flip the tile.</p>
+        <p>Hover + <kbd>`, 0, 1, 2, 3</kbd> keys to mark the tile.</p>
+        <p>Hover + <kbd>Shift/Ctrl</kbd> - View tile values once game finished.</p>
+      </span>
+    </div>
   </body>
   <script src="confetti.js"></script>
   <script src="voltorb-flip.js"></script>
