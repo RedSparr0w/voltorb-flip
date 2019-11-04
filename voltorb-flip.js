@@ -97,6 +97,8 @@ class Game {
   }
 
   completeLevel(){
+    this.state = State.IDLE;
+    confetti.start(3000, 150, 300);
     document.getElementById('next_level').style.display = '';
   }
 }
